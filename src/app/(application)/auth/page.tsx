@@ -5,7 +5,9 @@ export default async function Auth() {
 
   
   return (
+    <div>
     <SignupForm/>
+    </div>
   );
 }
 

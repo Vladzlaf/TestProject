@@ -14,7 +14,6 @@ const DealForm = () => {
     e.preventDefault();
     await dealService.createDeal(new Deal('', title, description, discount));
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" />

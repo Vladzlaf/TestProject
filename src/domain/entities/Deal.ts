@@ -6,11 +6,6 @@ export class Deal {
     public isActive: boolean = true
   ) {}
 
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Set the deal status to inactive.
- */
-/******  3648f666-adc9-4823-8a9f-4b15cc3f2a77  *******/
   discontinue() {
     this.isActive = false;
   }

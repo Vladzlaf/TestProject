@@ -4,16 +4,18 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthState {
   user: any | null;
+  role: string | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
+  role: null,
   loading: false,
   error: null,
 };
@@ -26,7 +28,8 @@ export const signup = createAsyncThunk(
       email,
       role,
     });
-    return userCredential.user;
+
+    return { user: userCredential.user, role };
   }
 );
 
@@ -34,7 +37,15 @@ export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }: { email: string; password: string }) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    
+    const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+    const userData = userDoc.data();
+
+    if (!userData) {
+      throw new Error('User role not found.');
+    }
+
+    return { user: userCredential.user, role: userData.role };
   }
 );
 
@@ -44,6 +55,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.role = null;
     },
   },
   extraReducers: (builder) => {
@@ -54,7 +66,8 @@ const authSlice = createSlice({
       })
       .addCase(signup.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.role = action.payload.role;
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;
@@ -66,7 +79,8 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.role = action.payload.role;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

@@ -1,7 +1,7 @@
-"use client"; // Must be the first line
+"use client";
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Ensure you import from next/navigation
+import { useRouter } from 'next/navigation';
 import { completeSignIn } from '@/infrastructure/auth/auth';
 
 export default function CompleteSignIn() {

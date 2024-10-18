@@ -5,7 +5,6 @@ export const enrollInDeal = async (userId: string, dealId: string) => {
   await userRef.update({
     enrolledDeals: firestore.FieldValue.arrayUnion(dealId),
   });
-  // Logic to send email with deal redemption instructions goes here
 };
 
 export const createUserProfile = async (userId: string, email: string) => {

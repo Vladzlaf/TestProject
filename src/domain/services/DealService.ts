@@ -4,6 +4,9 @@ import { DealRepository } from "../repos/DealRepository";
 export class DealService {
   constructor(private dealRepo: DealRepository) {}
 
+  async getCurrentUser() {
+    return { id: 'user-id-123', email: 'user@example.com', role: 'User', enrolledDeals: [] };
+  }
   createDeal(deal: Deal) {
     return this.dealRepo.create(deal);
   }

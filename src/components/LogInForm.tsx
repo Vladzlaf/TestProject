@@ -4,16 +4,17 @@ import { auth, db } from '@/infrastructure/firebase/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-// Define a type for form values
 interface LoginFormValues {
   email: string;
 }
 
 export default function LogInForm() {
   const { register, handleSubmit } = useForm<LoginFormValues>();
+  const [user, setUser] = useState(null); 
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
@@ -22,8 +23,6 @@ export default function LogInForm() {
       console.error('Error:', error);
     }
   };
-  const router = useRouter();
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -32,12 +31,11 @@ export default function LogInForm() {
         const userData = userDoc.data();
         if (userData?.role !== 'merchant') {
           alert('Access denied!');
-          router.push('/');
         } else {
-          setUser(user);
+          setUser(user); 
         }
       } else {
-        router.push('/login');
+        if (router) router.push('/login');
       }
     });
 

@@ -1,19 +1,25 @@
-"use client"
-import { DealService } from '@/application/services/DealService';
 import { Deal } from '@/domain/entities/Deal';
-import { DealRepository } from '@/infrastructure/firebase/dealRepo';
+import { DealRepository } from '@/domain/repos/DealRepository';
+import { DealService } from '@/domain/services/DealService';
 import { useState } from 'react';
 
-const DealForm = () => {
+interface DealFormProps {
+  onDealCreated: () => void; // Callback to notify parent when deal is created
+}
+
+const DealForm = ({ onDealCreated }: DealFormProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [discount, setDiscount] = useState(0);
+
   const dealService = new DealService(new DealRepository());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await dealService.createDeal(new Deal('', title, description, discount));
+    onDealCreated(); // Notify parent that a deal has been created
   };
+
   return (
     <form onSubmit={handleSubmit}>
       <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" />

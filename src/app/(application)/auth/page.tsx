@@ -1,4 +1,4 @@
-import SignupForm from "@/components/CompleteSignIn";
+import CompleteSignIn from "@/components/CompleteSignIn";
 
 
 export default async function Auth() {
@@ -6,7 +6,7 @@ export default async function Auth() {
   
   return (
     <div>
-    <SignupForm/>
+    <CompleteSignIn/>
     </div>
   );
 }

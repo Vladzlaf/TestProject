@@ -5,13 +5,20 @@ import { DealService } from '@/domain/services/DealService';
 import { User } from 'firebase/auth';
 import { DocumentData } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import DealForm from './DealForm'; // Import the DealForm component
+import DealForm from './DealForm'; 
+import { auth, db } from '@/infrastructure/firebase/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 const dealService = new DealService(new DealRepository());
 
 export default function MerchantDashboard() {
   const [deals, setDeals] = useState<DocumentData[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null); 
+  const router = useRouter();
+
 
   useEffect(() => {
     async function fetchDeals() {
@@ -39,6 +46,25 @@ export default function MerchantDashboard() {
     const updatedDeals = await dealService.getDealsByMerchant('merchant-id-123');
     setDeals(updatedDeals);
   };
+
+  useEffect(() => {
+    if(router) {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.data();
+        if (userData?.role !== 'merchant') {
+          alert('Access denied!');
+        } else {
+          setUser(user); 
+        }
+      } else {
+        if (router) router.push('/log-in');
+      }
+    });
+
+    return () => unsubscribe();}
+  }, [router]);
 
   return (
     <div>

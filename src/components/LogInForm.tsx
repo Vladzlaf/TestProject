@@ -3,7 +3,7 @@ import { sendLoginLink } from '@/infrastructure/auth/auth';
 import { auth, db } from '@/infrastructure/firebase/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -13,8 +13,6 @@ interface LoginFormValues {
 
 export default function LogInForm() {
   const { register, handleSubmit } = useForm<LoginFormValues>();
-  const [user, setUser] = useState(null); 
-  const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
@@ -24,23 +22,7 @@ export default function LogInForm() {
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        const userData = userDoc.data();
-        if (userData?.role !== 'merchant') {
-          alert('Access denied!');
-        } else {
-          setUser(user); 
-        }
-      } else {
-        if (router) router.push('/login');
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+  
 
   return (
     <div>
